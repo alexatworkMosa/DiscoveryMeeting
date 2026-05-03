@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>סיכום פגישת Discovery — אוטומציה לבדיקות תוכנה</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    direction: rtl;
+    text-align: right;
+    background: #f4f5f7;
+    color: #2c2c2c;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #1a1a2e;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 4px;
+    padding: 0 24px;
+    height: 52px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  nav .brand {
+    color: #7ec8a4;
+    font-weight: 700;
+    font-size: 13px;
+    margin-left: auto;
+    white-space: nowrap;
+  }
+  nav a {
+    color: #b0c8d8;
+    text-decoration: none;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+  }
+  nav a:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  nav a.active { background: #16a085; color: #fff; }
+
+  /* ── LAYOUT ── */
+  .page { max-width: 900px; margin: 0 auto; padding: 28px 20px 60px; }
+
+  /* ── COVER ── */
+  .cover {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+    color: #fff;
+    border-radius: 12px;
+    padding: 44px 40px 36px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: -60px;
+    width: 200px; height: 200px;
+    background: rgba(126,200,164,0.08);
+    border-radius: 50%;
+  }
+  .cover .tag {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #7ec8a4;
+    margin-bottom: 12px;
+    font-weight: 600;
+  }
+  .cover h1 {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 10px;
+  }
+  .cover .sub {
+    font-size: 15px;
+    color: #b0c8d8;
+    margin-bottom: 28px;
+  }
+  .cover-meta {
+    display: flex;
+    flex-direction: row-reverse;
+    flex-wrap: wrap;
+    gap: 0;
+    border-top: 1px solid rgba(255,255,255,0.12);
+    padding-top: 20px;
+  }
+  .cover-meta .item {
+    text-align: center;
+    padding: 0 20px;
+    border-left: 1px solid rgba(255,255,255,0.12);
+  }
+  .cover-meta .item:last-child { border-left: none; padding-right: 0; }
+  .cover-meta .item .v { font-size: 15px; font-weight: 700; color: #7ec8a4; }
+  .cover-meta .item .l { font-size: 11px; color: #8faab8; margin-top: 3px; }
+
+  /* ── SECTION ── */
+  .section {
+    background: #fff;
+    border-radius: 12px;
+    padding: 28px 32px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    scroll-margin-top: 64px;
+  }
+  .section-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid #f0f0f0;
+  }
+  .section-num {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .section-title { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+
+  .s1 .section-num { background: #1a1a2e; }
+  .s2 .section-num { background: #1a1a2e; }
+  .s3 .section-num { background: #1a1a2e; }
+  .s4 .section-num { background: #1a1a2e; }
+  .s5 .section-num { background: #1a1a2e; }
+
+  /* ── TOPICS ── */
+  .topic {
+    margin-bottom: 18px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #f2f2f2;
+  }
+  .topic:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .topic-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #16a085;
+    margin-bottom: 8px;
+    padding-right: 12px;
+    border-right: 3px solid #16a085;
+  }
+  .topic ul { list-style: none; padding: 0; margin-right: 15px; }
+  .topic ul li {
+    font-size: 13px;
+    color: #444;
+    line-height: 1.75;
+    padding-right: 16px;
+    position: relative;
+  }
+  .topic ul li::before {
+    content: "–";
+    position: absolute;
+    right: 0;
+    color: #bbb;
+  }
+
+  /* ── DECISIONS ── */
+  .decision {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 10px;
+    padding: 12px 14px;
+    background: #f4f8fd;
+    border-radius: 8px;
+    border-right: 4px solid #2471a3;
+    transition: background 0.15s;
+  }
+  .decision:hover { background: #e8f1fb; }
+  .decision:last-child { margin-bottom: 0; }
+  .d-num {
+    font-size: 12px; font-weight: 700;
+    color: #2471a3; background: #d6e8f8;
+    border-radius: 50%; min-width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .d-text { font-size: 13.5px; line-height: 1.65; color: #2c2c2c; }
+  .d-text strong { color: #1a3a5c; }
+
+  /* ── TABLE ── */
+  .table-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    direction: rtl;
+  }
+  thead th {
+    background: #1a1a2e;
+    color: #fff;
+    padding: 10px 14px;
+    text-align: right;
+    font-weight: 600;
+    direction: rtl;
+    font-size: 13px;
+  }
+  tbody td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #ececec;
+    vertical-align: top;
+    line-height: 1.55;
+    text-align: right;
+    direction: rtl;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: #f8f4ff; }
+  tbody tr:nth-child(even) td { background: #fafafa; }
+  tbody tr:nth-child(even):hover td { background: #f2eeff; }
+
+  .tag-owner {
+    display: inline-block;
+    font-size: 11px; font-weight: 700;
+    padding: 3px 10px; border-radius: 20px;
+    white-space: nowrap;
+  }
+  .t-green  { background: #d5f0e5; color: #0d6e4a; }
+  .t-blue   { background: #d4e8f8; color: #1a4f7a; }
+  .t-purple { background: #ece8fb; color: #5b2d8e; }
+
+  /* ── OPEN ITEMS ── */
+  .open-item {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    background: #fef9ee;
+    border-right: 4px solid #d68910;
+    border-radius: 8px;
+    transition: background 0.15s;
+  }
+  .open-item:hover { background: #fdf0d5; }
+  .open-item:last-child { margin-bottom: 0; }
+  .open-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: #d68910; flex-shrink: 0; margin-top: 5px;
+  }
+  .open-text { font-size: 13.5px; line-height: 1.65; color: #2c2c2c; }
+  .open-text strong { color: #7a4800; }
+
+  /* ── STEPS ── */
+  .step {
+    display: flex;
+    flex-direction: row-reverse;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    background: #fdf1f0;
+    border-right: 4px solid #c0392b;
+    border-radius: 8px;
+    direction: rtl;
+    text-align: right;
+    transition: background 0.15s;
+  }
+  .step:hover { background: #fae0de; }
+  .step:last-child { margin-bottom: 0; }
+  .s-num {
+    font-size: 13px; font-weight: 700;
+    color: #c0392b; background: #fad5d2;
+    border-radius: 50%; min-width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .s-text { font-size: 13.5px; line-height: 1.65; color: #2c2c2c; text-align: right; direction: rtl; }
+  .s-text strong { color: #7b1a14; }
+  .s-when {
+    display: inline-block;
+    margin-top: 4px;
+    font-size: 11px; font-weight: 700;
+    color: #fff; background: #c0392b;
+    padding: 2px 10px; border-radius: 20px;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    font-size: 12px;
+    color: #aaa;
+    padding: 20px 0 10px;
+  }
+</style>
+</head>
+<body>
+
+
+
+<div class="page">
+
+  <!-- COVER -->
+  <div class="cover">
+    <div class="tag">סיכום פגישה</div>
+    <h1>פגישת Discovery<br>אוטומציה לבדיקות תוכנה</h1>
+    <div style="font-size:13px; color:#7ec8a4; margin-top:10px; letter-spacing:1px;">03.05.2026</div>
+    <div style="font-size:12px; color:#b0c8d8; margin-top:10px; line-height:1.7;"><span style="color:#7ec8a4; font-weight:600;">משתתפים בפגישה</span> &mdash; מיכל גרינפדל, אסתר מורשת, לאה גולדשטוף, איתי אגמון, אלכסנדר שטיין, אולג קודינסקי</div>
+    <div class="cover-meta">
+      
+      
+      
+      
+      
+    </div>
+  </div>
+
+
+  <!-- 1 -->
+  <div class="section s1" id="s1">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div class="section-title">נושאים שנדונו</div>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label">בחירת Stack טכנולוגי לאוטומציה</div>
+      <ul>
+        <li>נדונו שפות: TypeScript, Python, C# כל אחת עם יתרונות וחסרונות</li>
+        <li>Playwright זוהה ככלי מועדף לבדיקות UI שילוב מצוין עם VS Code</li>
+        <li>Stack סופי יוחלט לאחר Discovery טכני של הסביבה הקיימת</li>
+        <li>C# יתרון לממשקי WinForms ישנים, אך עם חסרונות בהקשר אוטומציה</li>
+      </ul>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label">סוגי בדיקות UI, API ו-End-to-End</div>
+      <ul>
+        <li>הובהר ההבדל: בדיקות UI (ולידציות שדות) לעומת end-to-end תהליכיות</li>
+        <li>ה-MVP ישלב שימוש ב-API להכנת סביבה ומשאבים, ובדיקת תהליך מעל ה-UI</li>
+        <li>תרחיש MVP: פנייה מסגרות קטינים מ-Service הרשויות (API) ועד ל-UI המערכת</li>
+        <li>התשתית תאפשר גם UI מפורט וגם end-to-end לפי הצורך</li>
+      </ul>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label">כלי דיווח תוצאות בדיקות</div>
+      <ul>
+        <li>הספק הציג Report Portal open-source, חינמי, מתחבר לכל פרמורק</li>
+        <li>Report Portal: חקירת כשלונות, קטלוג סיבות (Bug / Automation / Environment), דשבורדים</li>
+        <li>אלטרנטיבות: Allure Report, Extent Reports, שילוב ב-TFS / Azure DevOps</li>
+        <li>ההחלטה הסופית תיעשה בשיתוף האגף לאחר הצגה והשוואה</li>
+      </ul>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label">סביבת עבודה ונתוני בדיקה (Test Data)</div>
+      <ul>
+        <li>הוחלט: האוטומציה תרוץ על סביבת QA לא DEV ולא Production</li>
+        <li>אתגר מרכזי: ניהול Test Data אוכלוסיות קטינים, ת"ז, rollback, נתונים נקיים</li>
+        <li>גמישות ב-database (מחיקה, עריכה, rollback) רצויה ככל האפשר</li>
+        <li>WCF: WSDL מאפשר יצירת client אוטומטית; REST: יש לספק Swagger</li>
+        <li>הספק הדגיש: Test Data הוא האתגר הכי קריטי בפרויקט</li>
+      </ul>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label">שילוב AI בתהליך הפיתוח</div>
+      <ul>
+        <li>הספק הציג שימוש ב-Kiro (IDE מבוסס AI) + Claude Opus 4.6 לבניית תשתיות</li>
+        <li>תהליך: הזנת Angular client-side code ל-AI קבלת Page Objects ותשתית מובנית</li>
+        <li>AI חוסך כ-80% מזמן כתיבת תשתיות נמצא אפקטיבי מאוד בפועל</li>
+        <li>תסריטי הבדיקה הקיימים ישמשו כ-template ל-AI לכתיבת טסטים אוטומטיים</li>
+        <li>נדרש אדם עם יכולות coding לביקורת ותחזוקת תוצרי ה-AI</li>
+      </ul>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label">מודל משאבים, אחזקה וחזון ארגוני</div>
+      <ul>
+        <li>ה-MVP יבוצע על ידי הספק; בהמשך נדרש בעל תפקיד coding בתוך האגף</li>
+        <li>כל שינוי בפיתוח מחייב עדכון אוטומציה מקביל עבודה שוטפת, לא חד-פעמית</li>
+        <li>האפיון לא הקוד הוא מקור האמת לבניית תסריטי הבדיקות</li>
+        <li>ה-MVP הוא "סנונית ראשונה" שתיצור תיאבון ו-commitment ארגוני להרחבה</li>
+        <li>עם AI ה-ramp-up קצר משמעותית המעבר ריאלי הרבה יותר</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 2 -->
+  <div class="section s2" id="s2">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div class="section-title">החלטות שהתקבלו</div>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label" style="color:#2471a3; border-color:#2471a3;">מערכת MVP</div>
+      <ul>
+        <li>מערכת ועדות חריגים תהליך פנייה מסגרות קטינים, מ-API הרשויות ועד ל-UI, end-to-end</li>
+      </ul>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label" style="color:#2471a3; border-color:#2471a3;">כלי אוטומציה</div>
+      <ul>
+        <li>Playwright ככלי עיקרי לבדיקות UI, בשילוב API לכנת סביבה</li>
+        <li>שפה תוחלט לאחר Discovery טכני</li>
+      </ul>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label" style="color:#2471a3; border-color:#2471a3;">סביבת עבודה</div>
+      <ul>
+        <li>האוטומציה תרוץ על סביבת QA בלבד לא DEV</li>
+        <li>נדרשת סביבה נקייה עם Test Data מתאים</li>
+      </ul>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label" style="color:#2471a3; border-color:#2471a3;">שילוב AI</div>
+      <ul>
+        <li>Kiro + Claude ישמשו לבניית תשתיות על בסיס Angular client-side code</li>
+        <li>תסריטים קיימים ישמשו כ-template</li>
+      </ul>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label" style="color:#2471a3; border-color:#2471a3;">כלי דיווח</div>
+      <ul>
+        <li>ייבחר בשלב הבא Report Portal / Allure / TFS לאחר הצגה והשוואה משותפת</li>
+      </ul>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label" style="color:#2471a3; border-color:#2471a3;">מסירה ראשונה</div>
+      <ul>
+        <li>הספק ישלח סיכום כתוב מלא של כל הדרישות (סביבה, גישות, נתונים, רישיונות)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 3 -->
+  <div class="section s3" id="s3">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div class="section-title">משימות ואחריות</div>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label" style="color:#3d5a80; border-color:#3d5a80;">הספק</div>
+      <ul>
+        <li>שליחת רשימת דרישות טכניות מפורטת סביבה, גישות, Test Data, רישיונות <strong>היום</strong></li>
+        <li>הצגת כלי דיווח והשוואה Report Portal, Allure, TFS המלצה ובחירה</li>
+      </ul>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label" style="color:#3d5a80; border-color:#3d5a80;">האגף</div>
+      <ul>
+        <li>קידום אישורים ומודל התקשרות ימים עד שבועות</li>
+      </ul>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label" style="color:#3d5a80; border-color:#3d5a80;">האגף</div>
+      <ul>
+        <li>הקמת סביבת פיתוח בענן עם Kiro + רישיונות AI + VS Code לאחר אישור עסקי</li>
+        <li>הכנת סביבת QA עם גישה לספק גישה ל-application, database, WCF ו-REST APIs</li>
+      </ul>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label" style="color:#3d5a80; border-color:#3d5a80;">האגף</div>
+      <ul>
+        <li>מתן גישה לקוד מקור Angular נדרש לבניית Page Objects ע"י AI, גישה read-only מספיקה</li>
+        <li>הספקת Swagger / WSDL לכל ה-APIs REST: Swagger; WCF: WSDL</li>
+      </ul>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label" style="color:#3d5a80; border-color:#3d5a80;">האגף</div>
+      <ul>
+        <li>הכנת Test Data ת"ז קטינים לסביבת טסט + משתמשים עם הרשאות מתאימות</li>
+        <li>מסירת תסריטי בדיקה מ-MTM ישמשו כ-template ל-AI, נראו מפורטים ומסודרים</li>
+      </ul>
+    </div>
+
+
+  </div>
+
+  <!-- 4 -->
+  <div class="section s4" id="s4">
+    <div class="section-header">
+      <div class="section-num">4</div>
+      <div class="section-title">נקודות פתוחות להמשך</div>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label" style="color:#4a7c6f; border-color:#4a7c6f;">טכנולוגיה וכלים</div>
+      <ul>
+        <li>Playwright ככלי UI כמעט ודאי</li>
+        <li>כלי דיווח תוצאות Report Portal vs. Allure vs. TFS טרם הוחלט</li>
+      </ul>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label" style="color:#4a7c6f; border-color:#4a7c6f;">נתונים וסביבה</div>
+      <ul>
+        <li>ניהול Test Data מנגנון rollback, שאילתות דינמיות, ניקוי נתונים פתרון מלא טרם הוגדר, קריטי לפני Kickoff</li>
+        <li>הרשאות גישה לספק רמת גישה ל-source code, לסביבת QA, ל-database טעונה אישור IT ומנהלים</li>
+      </ul>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label" style="color:#4a7c6f; border-color:#4a7c6f;">ארגון ותקציב</div>
+      <ul>
+        <li>בעל תפקיד ייעודי לאוטומציה האם לגייס מפתח אוטומציה פנימי? מי ינהל לאחר שהספק מסיים?</li>
+        <li>מודל עסקי ותקציב עלויות רישיונות AI (Kiro), עלות הספק ל-MVP, תקציב לאחזקה עתידית</li>
+        <li>תהליך עדכון אוטומציה כיצד ישולב עדכון טסטים בתהליך ה-sprint? מי אחראי ומתי?</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 5 -->
+  <div class="section s5" id="s5">
+    <div class="section-header">
+      <div class="section-num">5</div>
+      <div class="section-title">צעדים הבאים</div>
+    </div>
+
+    <div class="topic">
+      <div class="topic-label" style="color:#6b3a3a; border-color:#6b3a3a;">צעדים הבאים</div>
+      <ul>
+        <li>הספק שולח רשימת דרישות</li>
+        <li>האגף שולח סיכום פגישה מטעמו לאישור ההסכמות</li>
+        <li>ליאור מקדמת אישורים לסגירת מודל ההתקשרות</li>
+        <li>IT מכין סביבת פיתוח בענן עם Kiro + רישיונות AI</li>
+        <li>אלכס מכין תסריטי בדיקה מסודרים מ-MTM לתרחיש מסגרות קטינים</li>
+      </ul>
+    </div>
+  </div>
+
+  <footer>
+    סיכום זה הופק מתמליל הפגישה &nbsp;&bull;&nbsp; אגף מערכות מידע משרד הרווחה והשירותים החברתיים &nbsp;&bull;&nbsp; 03 מאי 2026
+  </footer>
+
+</div>
+
+<script>
+  const navLinks = document.querySelectorAll('[href^="#s"]');
+  const sections = document.querySelectorAll('.section[id]');
+
+  function setActive(el) {
+    navLinks.forEach(a => {
+      a.classList.remove('nav-active');
+      a.style.background = 'rgba(255,255,255,0.07)';
+      a.style.color = '#b0c8d8';
+    });
+    el.classList.add('nav-active');
+    el.style.background = '#16a085';
+    el.style.color = '#fff';
+  }
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    navLinks.forEach(a => {
+      const isActive = a.getAttribute('href') === '#' + current;
+      a.classList.toggle('nav-active', isActive);
+      a.style.background = isActive ? '#16a085' : 'rgba(255,255,255,0.07)';
+      a.style.color = isActive ? '#fff' : '#b0c8d8';
+    });
+  });
+</script>
+</body>
+</html>
